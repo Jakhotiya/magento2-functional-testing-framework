@@ -31,5 +31,6 @@ if (!(bool)$debug_mode && extension_loaded('xdebug')) {
 
 $RELATIVE_TESTS_MODULE_PATH = '/MFTF/FunctionalTest';
 
+defined('MAGENTO_BP') || define('MAGENTO_BP', PROJECT_ROOT);
 defined('TESTS_BP') || define('TESTS_BP', __DIR__);
 defined('TESTS_MODULE_PATH') || define('TESTS_MODULE_PATH', TESTS_BP . $RELATIVE_TESTS_MODULE_PATH);

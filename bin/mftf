@@ -12,12 +12,17 @@ if (PHP_SAPI !== 'cli') {
 }
 
 try {
-    require_once __DIR__ . '/../bootstrap.php';
+    require_once __DIR__ . '/../../../autoload.php';
     $application = new Symfony\Component\Console\Application();
     $application->setName('Magento Functional Testing Framework CLI');
     $application->setVersion('1.0.0');
     $application->add(new Magento\FunctionalTestingFramework\Console\SetupEnvCommand());
+    $application->add(new Magento\FunctionalTestingFramework\Console\CleanProjectCommand());
     $application->add(new Magento\FunctionalTestingFramework\Console\BuildProjectCommand());
+    $application->add(new Magento\FunctionalTestingFramework\Console\GenerateSuiteCommand());
+    $application->add(new Magento\FunctionalTestingFramework\Console\GenerateTestsCommand());
+    $application->add(new Magento\FunctionalTestingFramework\Console\RunTestGroupCommand());
+    $application->add(new Magento\FunctionalTestingFramework\Console\RunTestCommand());
     $application->run();
 } catch (\Exception $e) {
     while ($e) {

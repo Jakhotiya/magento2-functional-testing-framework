@@ -37,6 +37,13 @@ class EnvProcessor
     private $env = [];
 
     /**
+     * Boolean indicating existence of env file
+     *
+     * @var bool
+     */
+    private $envExists = false;
+
+    /**
      * EnvProcessor constructor.
      * @param string $envFile
      */
@@ -44,33 +51,56 @@ class EnvProcessor
         string $envFile = ''
     ) {
         $this->envFile = $envFile;
-        $this->envExampleFile = $envFile . '.example';
+        $this->envExampleFile = realpath(FW_BP. "/etc/config/.env.example");
+
+        if (file_exists($envFile)) {
+            $this->envExists = true;
+        }
+
     }
 
     /**
-     * Serves for parsing '.env.example' file into associative array.
+     * Serves for parsing '.env' file into associative array.
      *
      * @return array
      */
-    public function parseEnvFile(): array
+    private function parseEnvFile(): array
     {
-        $envLines = file(
+        $envExampleFile = file(
             $this->envExampleFile,
             FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES
         );
-        $env = [];
-        foreach ($envLines as $line) {
+
+        $envExampleArray = $this->parseEnvFileLines($envExampleFile);
+        $envArray = [];
+
+        if ($this->envExists) {
+            $envFile = file(
+                $this->envFile,
+                FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES
+            );
+
+            $envArray = $this->parseEnvFileLines($envFile);
+        }
+
+        return array_diff_key($envExampleArray, $envArray);
+    }
+
+    private function parseEnvFileLines($file): array
+    {
+        $fileArray = [];
+        foreach ($file as $line) {
             // do not use commented out lines
             if (strpos($line, '#') !== 0) {
                 list($key, $value) = explode('=', $line);
-                $env[$key] = $value;
+                $fileArray[$key] = $value;
             }
         }
-        return $env;
+        return $fileArray;
     }
 
     /**
-     * Serves for putting array with environment variables into .env file.
+     * Serves for putting array with environment variables into .env file or appending new variables we introduce
      *
      * @param array $config
      * @return void
@@ -81,7 +111,12 @@ class EnvProcessor
         foreach ($config as $key => $value) {
             $envData .= $key . '=' . $value . PHP_EOL;
         }
-        file_put_contents($this->envFile, $envData);
+
+        if ($this->envExists) {
+            file_put_contents($this->envFile, $envData, FILE_APPEND);
+        } else {
+            file_put_contents($this->envFile, $envData);
+        }
     }
 
     /**
