@@ -48,6 +48,10 @@ class GenerateSuiteCommand extends Command
         foreach ($suites as $suite) {
             SuiteGenerator::getInstance()->generateSuite($suite);
         }
+
+        if ($output->isVerbose()) {
+            $output->writeLn("All Suites Generated");
+        }
     }
 
 }

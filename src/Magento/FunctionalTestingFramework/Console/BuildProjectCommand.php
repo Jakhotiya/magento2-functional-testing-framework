@@ -50,6 +50,8 @@ class BuildProjectCommand extends Command
      * @param OutputInterface $output
      * @return void
      * @throws \Symfony\Component\Console\Exception\LogicException
+     *
+     * @SuppressWarnings(PHPMD.UnusedLocalVariable)
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
@@ -111,6 +113,13 @@ class BuildProjectCommand extends Command
         $output->writeln("functional.suite.yml configuration successfully applied.");
     }
 
+    /**
+     * Finds relative paths between two paths passed in as strings.
+     *
+     * @param string $from
+     * @param string $to
+     * @return string
+     */
     private function returnRelativePath($from, $to)
     {
         $from = is_dir($from) ? rtrim($from, '\/') . '/' : $from;

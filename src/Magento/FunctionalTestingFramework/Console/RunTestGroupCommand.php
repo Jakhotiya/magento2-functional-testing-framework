@@ -45,6 +45,8 @@ class RunTestGroupCommand extends Command
      * @param OutputInterface $output
      * @return void
      * @throws \Symfony\Component\Console\Exception\LogicException
+     *
+     * @SuppressWarnings(PHPMD.UnusedLocalVariable)
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
