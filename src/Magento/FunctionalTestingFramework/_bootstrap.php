@@ -10,7 +10,11 @@ defined('FW_BP') || define('FW_BP', realpath(__DIR__ . '/../../../'));
 
 // get the root path of the project (we will always be installed under vendor)
 $projectRootPath = substr(FW_BP, 0, strpos(FW_BP, '/vendor/'));
-define('PROJECT_ROOT', $projectRootPath);
+
+if (empty($projectRootPath)) {
+    // Currently we do not support global execution, so leave this script before pathing is set improperly
+    return;
+}
 
 // set Magento_BP as Root_Project Path
 defined('MAGENTO_BP') || define('MAGENTO_BP', realpath($projectRootPath));
