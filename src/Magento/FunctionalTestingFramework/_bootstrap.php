@@ -17,6 +17,7 @@ if (empty($projectRootPath)) {
 }
 
 // set Magento_BP as Root_Project Path
+define('PROJECT_ROOT', $projectRootPath);
 defined('MAGENTO_BP') || define('MAGENTO_BP', realpath($projectRootPath));
 
 // load .env (if it exists)

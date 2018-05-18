@@ -25,11 +25,11 @@ class GenerateSuiteCommand extends Command
     {
         $this
             ->setName('generate:suite')
-            ->setDescription('Generates a single suite based on declaration in xml')
+            ->setDescription('This command generates a single suite based on declaration in xml')
             ->addArgument(
                 'suites',
                 InputArgument::IS_ARRAY | InputArgument::REQUIRED,
-                'suite names for generation (separated by space)'
+                'argument which indicates suite names for generation (separated by space)'
             );
     }
 

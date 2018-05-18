@@ -32,7 +32,7 @@ class GenerateTestsCommand extends Command
     {
         $this
             ->setName('generate:tests')
-            ->setDescription('Generates all test files and suites based on xml declarations')
+            ->setDescription('This command generates all test files and suites based on xml declarations')
             ->addArgument('name', InputArgument::OPTIONAL | InputArgument::IS_ARRAY, 'name(s) of specific tests to generate')
             ->addOption("config", null, InputOption::VALUE_REQUIRED, 'default, singleRun, or parallel', 'default')
             ->addOption("force", null,InputOption::VALUE_NONE, 'force generation of tests regardless of Magento Instance Configuration')
@@ -99,12 +99,10 @@ class GenerateTestsCommand extends Command
         $testConfiguration = $this->parseTestsConfigJson($json, $testConfiguration);
 
         // if we have references to specific tests, we resolve the test objects and pass them to the config
-        if (!empty($testConfiguration['tests']))
-        {
+        if (!empty($testConfiguration['tests'])) {
             $testObjects = [];
 
-            foreach ($testConfiguration['tests'] as $test)
-            {
+            foreach ($testConfiguration['tests'] as $test) {
                 $testObjects[$test] = TestObjectHandler::getInstance()->getObject($test);
             }
 
@@ -124,7 +122,7 @@ class GenerateTestsCommand extends Command
      * @return array
      */
     private function parseTestsConfigJson($json, array $testConfiguration) {
-        if ($json == null) {
+        if ($json === null) {
             return $testConfiguration;
         }
 

@@ -13,6 +13,8 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Finder\Finder;
+use Symfony\Component\Finder\SplFileInfo;
 
 class CleanProjectCommand extends Command
 {
@@ -34,9 +36,10 @@ class CleanProjectCommand extends Command
      */
     protected function configure()
     {
-        $this->setName('reset');
-        $this->setDescription('This command will clean any configuration files from the environment (not including .env), as well as any generated artifacts.');
-        $this->addOption('hard', null, InputOption::VALUE_NONE, "parameter to force reset of configuration files.");
+        $this
+            ->setName('reset')
+            ->setDescription('This command will clean any configuration files from the environment (not including .env), as well as any generated artifacts.')
+            ->addOption('hard', null, InputOption::VALUE_NONE, "parameter to force reset of configuration files.");
     }
 
     /**
@@ -51,7 +54,10 @@ class CleanProjectCommand extends Command
     {
         $isHardReset = $input->getOption('hard');
         $fileSystem = new Filesystem();
-        $beforeState = $this->getFileSystemState(); // used only upon verbose output but useful for capturing debug state
+        $finder = new Finder();
+        $finder->files()->name('*.php')->in(FW_BP . '/src/Magento/FunctionalTestingFramework/Group/');
+
+        $beforeState = $this->getFileSystemState($finder); // used only upon verbose output but useful for capturing debug state
 
         // delete config files if user specifies a hard reset
         if ($isHardReset) {
@@ -62,12 +68,11 @@ class CleanProjectCommand extends Command
         $fileSystem->remove(self::GENERATED_FILES);
 
         // delete any suite based group files
-        $groupFiles = glob(FW_BP . '/src/Magento/FunctionalTestingFramework/Group/*.php');
-        $fileSystem->remove($groupFiles);
+        $fileSystem->remove($finder);
 
         if ($output->isVerbose()) {
             // build a list of the paths
-            $afterState = array_merge($this->getFileSystemState(), $groupFiles);
+            $afterState = $this->getFileSystemState($finder);
             $deletedFiles = array_diff($beforeState, $afterState);
             arsort($deletedFiles);
 
@@ -79,11 +84,13 @@ class CleanProjectCommand extends Command
     }
 
     /**
-     * Returns an array of files of concern for MFTF which represents state (i.e. existence on the filesysem).
+     * Returns an array of files of concern for MFTF which represents state (i.e. existence on the filesysem). Uses
+     * Symfony Finder component to determine location of any group files.
      *
+     * @param Finder $finder
      * @return array
      */
-    private function getFileSystemState()
+    private function getFileSystemState(Finder $finder)
     {
         $exists = [];
         $files = array_merge(self::CONFIGURATION_FILES, self::GENERATED_FILES);
@@ -91,6 +98,11 @@ class CleanProjectCommand extends Command
             if (file_exists($file)) {
                 $exists[] = $file;
             }
+        }
+
+        /** @var SplFileInfo $symfonyFile */
+        foreach ($finder->files() as $symfonyFile) {
+            $exists[] = $symfonyFile->getRealPath();
         }
 
         return $exists;

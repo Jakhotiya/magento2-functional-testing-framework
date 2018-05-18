@@ -41,7 +41,7 @@ class EnvProcessor
      *
      * @var bool
      */
-    private $envExists = false;
+    private $envExists;
 
     /**
      * EnvProcessor constructor.
@@ -51,12 +51,8 @@ class EnvProcessor
         string $envFile = ''
     ) {
         $this->envFile = $envFile;
-        $this->envExampleFile = realpath(FW_BP. "/etc/config/.env.example");
-
-        if (file_exists($envFile)) {
-            $this->envExists = true;
-        }
-
+        $this->envExists = file_exists($envFile);
+        $this->envExampleFile = realpath(FW_BP . "/etc/config/.env.example");
     }
 
     /**
@@ -71,22 +67,20 @@ class EnvProcessor
             FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES
         );
 
-        $envExampleArray = $this->parseEnvFileLines($envExampleFile);
-        $envArray = [];
-
+        $envContents = [];
         if ($this->envExists) {
             $envFile = file(
                 $this->envFile,
                 FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES
             );
 
-            $envArray = $this->parseEnvFileLines($envFile);
+            $envContents = $this->parseEnvFileLines($envFile);
         }
 
-        return array_diff_key($envExampleArray, $envArray);
+        return array_diff_key($this->parseEnvFileLines($envExampleFile), $envContents);
     }
 
-    private function parseEnvFileLines($file): array
+    private function parseEnvFileLines(array $file): array
     {
         $fileArray = [];
         foreach ($file as $line) {

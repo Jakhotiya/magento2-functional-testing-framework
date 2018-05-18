@@ -82,7 +82,7 @@ class RunTestGroupCommand extends Command
      * @param array $groups
      * @return string
      */
-    private function getGroupAndSuiteConfiguration($groups)
+    private function getGroupAndSuiteConfiguration(array $groups)
     {
         $testConfiguration['tests'] = [];
         $testConfiguration['suites'] = null;

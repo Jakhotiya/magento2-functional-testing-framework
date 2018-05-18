@@ -51,8 +51,8 @@ class RunTestCommand extends Command
             $command = $this->getApplication()->find('generate:tests');
             $args = [
                 '--tests' => json_encode([
-                    "tests" => $tests,
-                    "suites" => null
+                    'tests' => $tests,
+                    'suites' => null
                 ])
             ];
 
@@ -60,7 +60,7 @@ class RunTestCommand extends Command
         }
 
         // we only generate relevant tests here so we can execute "all tests"
-        $codeceptionCommand = realpath(PROJECT_ROOT . '/vendor/bin/codecept') . ' run functional --verbose --steps';
+        $codeceptionCommand = realpath(PROJECT_ROOT . '/vendor/bin/codecept') . " run functional --verbose --steps";
 
         $process = new Process($codeceptionCommand);
         $process->setWorkingDirectory(TESTS_BP);

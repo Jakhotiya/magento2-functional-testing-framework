@@ -20,6 +20,8 @@ use Symfony\Component\Yaml\Yaml;
 
 class BuildProjectCommand extends Command
 {
+    const DEFAULT_YAML_INLINE_DEPTH = 10;
+
     /**
      * Env processor manages .env files.
      *
@@ -34,8 +36,9 @@ class BuildProjectCommand extends Command
      */
     protected function configure()
     {
-        $this->setName('build:project');
-        $this->setDescription('Generate configuration files for the project. Build the Codeception project.');
+        $this
+            ->setName('build:project')
+            ->setDescription('Generate configuration files for the project. Build the Codeception project.');
         $this->envProcessor = new EnvProcessor(TESTS_BP . DIRECTORY_SEPARATOR . '.env');
         $env = $this->envProcessor->getEnv();
         foreach ($env as $key => $value) {
@@ -89,15 +92,16 @@ class BuildProjectCommand extends Command
      */
     private function generateConfigFiles(OutputInterface $output)
     {
+        $fileSystem = new Filesystem();
         //Find travel path from codeception.yml to FW_BP
-        $relativePath = $this->returnRelativePath(TESTS_BP, FW_BP);
+        $relativePath = $fileSystem->makePathRelative(FW_BP, TESTS_BP);
 
-        if (!file_exists(TESTS_BP . DIRECTORY_SEPARATOR . 'codeception.yml')) {
+        if (!$fileSystem->exists(TESTS_BP . DIRECTORY_SEPARATOR . 'codeception.yml')) {
             // read in the codeception.yml file
             $configDistYml = Yaml::parse(file_get_contents(realpath(FW_BP . "/etc/config/codeception.dist.yml")));
-            $configDistYml["paths"]["support"] = $relativePath . 'src/Magento/FunctionalTestingFramework';
-            $configDistYml["paths"]["envs"] = $relativePath . 'etc/_envs';
-            $configYmlText = Yaml::dump($configDistYml, 10);
+            $configDistYml['paths']['support'] = $relativePath . 'src/Magento/FunctionalTestingFramework';
+            $configDistYml['paths']['envs'] = $relativePath . 'etc/_envs';
+            $configYmlText = Yaml::dump($configDistYml, self::DEFAULT_YAML_INLINE_DEPTH);
 
             // dump output to new codeception.yml file
             file_put_contents(TESTS_BP . DIRECTORY_SEPARATOR . 'codeception.yml', $configYmlText);
@@ -105,51 +109,10 @@ class BuildProjectCommand extends Command
         }
 
         // copy the functional suite yml, this will only copy if there are differences between the template the destination
-        $fileSystem = new Filesystem();
         $fileSystem->copy(
-            realpath(FW_BP. "/etc/config/functional.suite.dist.yml"),
+            realpath(FW_BP . '/etc/config/functional.suite.dist.yml'),
             TESTS_BP . DIRECTORY_SEPARATOR . 'tests' . DIRECTORY_SEPARATOR . 'functional.suite.yml'
         );
-        $output->writeln("functional.suite.yml configuration successfully applied.");
-    }
-
-    /**
-     * Finds relative paths between two paths passed in as strings.
-     *
-     * @param string $from
-     * @param string $to
-     * @return string
-     */
-    private function returnRelativePath($from, $to)
-    {
-        $from = is_dir($from) ? rtrim($from, '\/') . '/' : $from;
-        $to   = is_dir($to)   ? rtrim($to, '\/') . '/'   : $to;
-        $from = str_replace('\\', '/', $from);
-        $to   = str_replace('\\', '/', $to);
-
-        $from     = explode('/', $from);
-        $to       = explode('/', $to);
-        $relPath  = $to;
-
-        foreach($from as $depth => $dir) {
-            // find first non-matching dir
-            if($dir === $to[$depth]) {
-                // ignore this directory
-                array_shift($relPath);
-            } else {
-                // get number of remaining dirs to $from
-                $remaining = count($from) - $depth;
-                if($remaining > 1) {
-                    // add traversals up to first matching dir
-                    $padLength = (count($relPath) + $remaining - 1) * -1;
-                    $relPath = array_pad($relPath, $padLength, '..');
-                    break;
-                } else {
-                    $relPath[0] = './' . $relPath[0];
-                }
-            }
-        }
-
-        return implode('/', $relPath);
+        $output->writeln('functional.suite.yml configuration successfully applied.');
     }
 }
