@@ -23,8 +23,7 @@ class GenerateSuiteCommand extends Command
      */
     protected function configure()
     {
-        $this
-            ->setName('generate:suite')
+        $this->setName('generate:suite')
             ->setDescription('This command generates a single suite based on declaration in xml')
             ->addArgument(
                 'suites',

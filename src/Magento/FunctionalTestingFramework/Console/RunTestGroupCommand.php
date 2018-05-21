@@ -27,8 +27,7 @@ class RunTestGroupCommand extends Command
      */
     protected function configure()
     {
-        $this
-            ->setName('run:group')
+        $this->setName('run:group')
             ->setDescription('Execute a set of tests referenced via group annotations')
             ->addOption('skip-generate', 'k', InputOption::VALUE_NONE, "only execute a group of tests without generating from source xml")
             ->addArgument(

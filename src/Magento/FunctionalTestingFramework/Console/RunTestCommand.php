@@ -25,8 +25,7 @@ class RunTestCommand extends Command
      */
     protected function configure()
     {
-        $this
-            ->setName("run:test")
+        $this->setName("run:test")
             ->setDescription("generation and execution of test(s) defined in xml")
             ->addArgument('name', InputArgument::REQUIRED | InputArgument::IS_ARRAY, "name of tests to generate and execute")
             ->addOption('skip-generate', 'k', InputOption::VALUE_NONE, "skip generation and execute existing test");

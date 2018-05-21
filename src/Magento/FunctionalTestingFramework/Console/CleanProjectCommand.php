@@ -36,8 +36,7 @@ class CleanProjectCommand extends Command
      */
     protected function configure()
     {
-        $this
-            ->setName('reset')
+        $this->setName('reset')
             ->setDescription('This command will clean any configuration files from the environment (not including .env), as well as any generated artifacts.')
             ->addOption('hard', null, InputOption::VALUE_NONE, "parameter to force reset of configuration files.");
     }

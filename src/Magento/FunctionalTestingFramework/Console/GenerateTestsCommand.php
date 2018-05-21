@@ -30,8 +30,7 @@ class GenerateTestsCommand extends Command
      */
     protected function configure()
     {
-        $this
-            ->setName('generate:tests')
+        $this->setName('generate:tests')
             ->setDescription('This command generates all test files and suites based on xml declarations')
             ->addArgument('name', InputArgument::OPTIONAL | InputArgument::IS_ARRAY, 'name(s) of specific tests to generate')
             ->addOption("config", null, InputOption::VALUE_REQUIRED, 'default, singleRun, or parallel', 'default')

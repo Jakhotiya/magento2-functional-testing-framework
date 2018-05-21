@@ -36,8 +36,7 @@ class BuildProjectCommand extends Command
      */
     protected function configure()
     {
-        $this
-            ->setName('build:project')
+        $this->setName('build:project')
             ->setDescription('Generate configuration files for the project. Build the Codeception project.');
         $this->envProcessor = new EnvProcessor(TESTS_BP . DIRECTORY_SEPARATOR . '.env');
         $env = $this->envProcessor->getEnv();
